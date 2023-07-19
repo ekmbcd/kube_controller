@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netpol-controller
+spec:
+  selector:
+    matchLabels:
+      app: netpol-controller
+  template:
+    metadata:
+      labels:
+        app: netpol-controller
+    spec:
+      containers:
+      - name: netpol-controller
+        image: localhost:5000/netpol-controller
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+
+      imagePullSecrets:
+      - name: registry-credentials
