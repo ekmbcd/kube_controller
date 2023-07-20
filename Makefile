@@ -1,7 +1,7 @@
 DOCKER_REGISTRY ?= localhost:5000
 TARGET_OS ?= linux
 DOCKER_TAG ?= netpol-controller
-DEPLOYMENT_FILE ?= controller.yaml
+DEPLOYMENT_FILE ?= stuff/controller.yaml
 
 all: compile build push apply
 

@@ -10,6 +10,7 @@ spec:
     metadata:
       labels:
         app: netpol-controller
+        test: test-label
     spec:
       containers:
       - name: netpol-controller

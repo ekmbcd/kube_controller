@@ -18,14 +18,14 @@ limitations under the License.
 package main
 
 import (
-	// "context"
-	"fmt"
-	// "time"
+	"flag"
+	"kube-controller/handlers"
+	"log"
 
-	// "k8s.io/apimachinery/pkg/api/errors"
-	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
+	discovery "github.com/gkarthiks/k8s-discovery"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	//
 	// Uncomment to load all auth plugins
 	// _ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -37,41 +37,36 @@ import (
 )
 
 func main() {
-	// creates the in-cluster config
-	config, err := rest.InClusterConfig()
+	k8s, err := discovery.NewK8s()
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
-	fmt.Println("config: ", config)
-	// creates the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	_ = clientset
-	if err != nil {
-		panic(err.Error())
-	}
-	// for {
-	// 	// get pods in all the namespaces by omitting namespace
-	// 	// Or specify namespace to get pods in particular namespace
-	// 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-	// 	if err != nil {
-	// 		panic(err.Error())
-	// 	}
-	// 	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 
-	// 	// Examples for error handling:
-	// 	// - Use helper functions e.g. errors.IsNotFound()
-	// 	// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
-	// 	_, err = clientset.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", metav1.GetOptions{})
-	// 	if errors.IsNotFound(err) {
-	// 		fmt.Printf("Pod example-xxxxx not found in default namespace\n")
-	// 	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-	// 		fmt.Printf("Error getting pod %v\n", statusError.ErrStatus.Message)
-	// 	} else if err != nil {
-	// 		panic(err.Error())
-	// 	} else {
-	// 		fmt.Printf("Found example-xxxxx pod in default namespace\n")
-	// 	}
+	port := flag.String("port", ":3000", "Port to listen on")
+	flag.Parse()
 
-	// 	time.Sleep(10 * time.Second)
-	// }
+	app := fiber.New()
+
+	// Middleware
+	app.Use(recover.New())
+	app.Use(logger.New())
+
+	// Create a /api/v1 endpoint
+	v1 := app.Group("/api/v1")
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Miao 🐱")
+	})
+
+	v1.Get("/deployment", func(c *fiber.Ctx) error {
+		return handlers.GetDeployments(c, k8s)
+	})
+
+	v1.Get("/netpol", func(c *fiber.Ctx) error {
+		return handlers.GetNetpols(c, k8s)
+	})
+
+	// Listen on port 3000
+	log.Fatal(app.Listen(*port)) // go run app.go -port=:3000
+
 }
