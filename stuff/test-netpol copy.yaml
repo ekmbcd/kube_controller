@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy-2
+  namespace: default
+spec:
+  podSelector:
+    matchExpressions:
+    - key: name
+      operator: In
+      values: ["frontend", "backend"]
+  policyTypes:
+    - Ingress
+

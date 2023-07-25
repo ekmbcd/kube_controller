@@ -19,6 +19,11 @@ spec:
         - namespaceSelector:
             matchLabels:
               project: myproject
+        - namespaceSelector:
+            matchExpressions:
+            - key: namespace
+              operator: In
+              values: ["frontend", "backend"]
         - podSelector:
             matchLabels:
               role: frontend

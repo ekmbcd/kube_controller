@@ -44,14 +44,12 @@ func GetNetpols(c *fiber.Ctx, k8s *discovery.K8s) error {
 
 func CreateNetpol(c *fiber.Ctx, k8s *discovery.K8s) error {
 
-	var netpol *networkingv1.NetworkPolicy
+	netpol := new(networkingv1.NetworkPolicy)
 
 	if err := c.BodyParser(netpol); err != nil {
 		log.Printf("Error parsing netpol %v\n", err)
 		return err
 	}
-
-	log.Printf("Netpol: %v\n", netpol)
 
 	netpol, err := k8s.Clientset.NetworkingV1().NetworkPolicies(netpol.Namespace).Create(context.TODO(), netpol, metav1.CreateOptions{})
 	if err != nil {

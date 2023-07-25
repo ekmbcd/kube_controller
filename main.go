@@ -42,7 +42,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	port := flag.String("port", ":3000", "Port to listen on")
+	port := flag.String("port", ":8000", "Port to listen on")
 	flag.Parse()
 
 	app := fiber.New()
@@ -62,11 +62,23 @@ func main() {
 		return handlers.GetDeployments(c, k8s)
 	})
 
+	v1.Get("/pod", func(c *fiber.Ctx) error {
+		return handlers.GetPods(c, k8s)
+	})
+
 	v1.Get("/netpol", func(c *fiber.Ctx) error {
 		return handlers.GetNetpols(c, k8s)
 	})
 
-	// Listen on port 3000
-	log.Fatal(app.Listen(*port)) // go run app.go -port=:3000
+	v1.Post("/netpol", func(c *fiber.Ctx) error {
+		return handlers.CreateNetpol(c, k8s)
+	})
+
+	v1.Get("/namespace", func(c *fiber.Ctx) error {
+		return handlers.GetNamespaces(c, k8s)
+	})
+
+	// Listen on port 8000
+	log.Fatal(app.Listen(*port)) // go run app.go -port=:8000
 
 }

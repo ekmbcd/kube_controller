@@ -7,13 +7,15 @@ const (
 	Egress  PolicyType = "Egress"
 )
 
-type PodSelector struct {
-	MatchLabels map[string]string `json:"matchLabels,omitempty"`
+type Selector struct {
+	MatchLabels      map[string]string `json:"matchLabels,omitempty"`
+	MatchExpressions []MatchExpression `json:"matchExpressions,omitempty"`
 }
 
 type Port struct {
 	Protocol string `json:"protocol"`
 	Port     int    `json:"port"`
+	EndPort  int    `json:"endPort,omitempty"`
 }
 
 type IPBlock struct {
@@ -21,14 +23,16 @@ type IPBlock struct {
 	Except []string `json:"except,omitempty"`
 }
 
-type NamespaceSelector struct {
-	MatchLabels map[string]string `json:"matchLabels,omitempty"`
+type MatchExpression struct {
+	Key      string   `json:"key"`
+	Operator string   `json:"operator"`
+	Values   []string `json:"values"`
 }
 
 type Policy struct {
-	PodSelector       *PodSelector       `json:"podSelector,omitempty"`
-	IPBlock           *IPBlock           `json:"ipBlock,omitempty"`
-	NamespaceSelector *NamespaceSelector `json:"namespaceSelector,omitempty"`
+	PodSelector       *Selector `json:"podSelector,omitempty"`
+	IPBlock           *IPBlock  `json:"ipBlock,omitempty"`
+	NamespaceSelector *Selector `json:"namespaceSelector,omitempty"`
 }
 
 type IngressPolicy struct {
@@ -47,9 +51,9 @@ type NetworkPolicy struct {
 		Namespace string `json:"namespace"`
 	} `json:"metadata"`
 	Spec struct {
-		PodSelector PodSelector     `json:"podSelector"`
+		PodSelector Selector        `json:"podSelector"`
 		PolicyTypes []PolicyType    `json:"policyTypes"`
-		Ingress     []IngressPolicy `json:"ingress"`
-		Egress      []EgressPolicy  `json:"egress"`
+		Ingress     []IngressPolicy `json:"ingress,omitempty"`
+		Egress      []EgressPolicy  `json:"egress,omitempty"`
 	} `json:"spec"`
 }
