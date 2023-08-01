@@ -19,19 +19,17 @@ func GetPods(c *fiber.Ctx, k8s *discovery.K8s) error {
 	}
 
 	filteredPods := []models.Pod{}
+
+OUTER:
 	for i := range pods.Items {
 		// remove kube-system pods
 		if pods.Items[i].Namespace != "kube-system" {
 			// consider replicasets as single pods
 			if (pods.Items[i].OwnerReferences) != nil {
-				alreadyIn := false
 				for _, pod := range filteredPods {
 					if pod.OwnerReferences[0].Name == pods.Items[i].OwnerReferences[0].Name {
-						alreadyIn = true
+						continue OUTER
 					}
-				}
-				if alreadyIn {
-					continue
 				}
 			}
 
@@ -46,6 +44,11 @@ func GetPods(c *fiber.Ctx, k8s *discovery.K8s) error {
 			if err != nil {
 				log.Printf("Error unmarshalling pod %v\n", err)
 				return err
+			}
+
+			// if replica set, get the name of the replica set
+			if (pods.Items[i].OwnerReferences) != nil {
+				podStruct.Name = pods.Items[i].OwnerReferences[0].Name
 			}
 
 			filteredPods = append(filteredPods, podStruct)
