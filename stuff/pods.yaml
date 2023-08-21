@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 1-ingress-blocked
+  labels:
+    pod: "1"
+    ingress: block
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 2-single-ingress
+  labels:
+    pod: "2"
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 3-multiple-ingress
+  labels:
+    pod: "3"
+    app: nginx
+    test: test-label
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 4-egress-blocked
+  labels:
+    pod: "4"
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 5-external-pod
+  namespace: test-ns
+  labels:
+    pod: "5"
+    app: nginx
+    test: test-label
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 6-external-pod-no-labels
+  namespace: test-ns
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: 7-external-pod-single-ingress-single-egress
+  labels: {}
+  namespace: test-ns-2
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
