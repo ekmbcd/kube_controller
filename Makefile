@@ -6,6 +6,12 @@ PORT ?= :8001
 
 all: compile build push apply
 
+install:
+	@printf ${INFO}"Installing dependencies"${END}
+	@go mod download && \
+		printf ${SUCCESS}"Dependencies installed successfully"${END} || \
+		(printf ${ERROR}"Dependencies installation failed"${END} && exit 1)
+
 compile:
 	@GOOS=${TARGET_OS} go build -o ./app . && \
 		printf ${SUCCESS}"Compiled successfully"${END} || \
