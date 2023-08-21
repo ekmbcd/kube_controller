@@ -2,6 +2,7 @@ DOCKER_REGISTRY ?= localhost:5000
 TARGET_OS ?= linux
 DOCKER_TAG ?= netpol-controller
 DEPLOYMENT_FILE ?= stuff/controller.yaml
+PORT ?= :8001
 
 all: compile build push apply
 
@@ -34,6 +35,14 @@ restart:
 	@kubectl rollout restart deployment ${DOCKER_TAG} && \
 		printf ${SUCCESS}"Restarted successfully"${END} || \
 		(printf ${ERROR}"Restart failed"${END} && exit 1)
+
+run:
+	@printf ${INFO}"Running locally"${END}
+	@go run main.go -port ${PORT}
+
+air:
+	@printf ${INFO}"Running locally with air"${END}
+	@air -- -port=${PORT}
 
 
 BLK="\033[30m"
