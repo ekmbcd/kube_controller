@@ -24,6 +24,7 @@ import (
 
 	discovery "github.com/gkarthiks/k8s-discovery"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	//
@@ -42,7 +43,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	port := flag.String("port", ":8000", "Port to listen on")
+	port := flag.String("port", ":8001", "Port to listen on")
 	flag.Parse()
 
 	app := fiber.New()
@@ -50,6 +51,7 @@ func main() {
 	// Middleware
 	app.Use(recover.New())
 	app.Use(logger.New())
+	app.Use(cors.New())
 
 	// Create a /api/v1 endpoint
 	v1 := app.Group("/api/v1")
@@ -78,7 +80,7 @@ func main() {
 		return handlers.GetNamespaces(c, k8s)
 	})
 
-	// Listen on port 8000
-	log.Fatal(app.Listen(*port)) // go run app.go -port=:8000
+	// Listen on port 8001
+	log.Fatal(app.Listen(*port)) // go run app.go -port=:8001
 
 }

@@ -27,6 +27,9 @@ OUTER:
 			// consider replicasets as single pods
 			if (pods.Items[i].OwnerReferences) != nil {
 				for _, pod := range filteredPods {
+					if len(pod.OwnerReferences) == 0 {
+						continue
+					}
 					if pod.OwnerReferences[0].Name == pods.Items[i].OwnerReferences[0].Name {
 						continue OUTER
 					}
